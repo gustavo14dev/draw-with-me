@@ -13,8 +13,6 @@ import {
 } from 'lucide-react';
 import {useEffect, useRef, useState} from 'react';
 
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
-
 function parseError(error: string) {
   const regex = /{"error":(.*)}/gm;
   const m = regex.exec(error);
@@ -248,6 +246,13 @@ export default function Home() {
           },
         ];
       }
+
+      const apiKeyToUse = customApiKey || process.env.GEMINI_API_KEY || '';
+      if (!apiKeyToUse) {
+        throw new Error('API key is missing. Please configure GEMINI_API_KEY in your Vercel project settings.');
+      }
+      
+      const ai = new GoogleGenAI({apiKey: apiKeyToUse});
 
       const response = await ai.models.generateContent({
         model: selectedModel,
